@@ -1,29 +1,21 @@
 const { respondJson, respondOnError } = require('./response')
-// const bookmarkData = require('../models/bookmarkModel')
 const connection = require('./DBConfig')
-
+const urlModel = require('./urlModel.js')
 
 exports.addUrl = async (req, res) => {
-    console.log(req.query)
 
+    const url = req.query.url
     connection.connect();
+    const params = url
 
-    var sql = 'SELECT url_id from Url Where url=?';
-    var params = [req.query.url]
-    await connection.query(sql, params, function(err, rows) {
-        if(err) throw err;
-        if(rows.length != 0) {
-            console.log(rows)
-            respondJson({"id":rows[0].url_id}, res, 200)
-        }
-    });
+    var id = await urlModel.getUrl(connection, params);
 
-    var sql = 'INSERT INTO Url (url) VALUES(?)';    
-    await connection.query(sql,params, function(err, rows){
-        if(err) throw err;
-        respondJson({"insertId":rows.insertId}, res, 201)
-    });
-
-    connection.end()
+    if(id.length !== 0) {
+        respondJson({"id":id[0].url_id}, res, 200)
+    } else {
+        conn = await connection.connect();
+        id = await urlModel.postUrl(connection, params);
+        respondJson({"id":id}, res, 201)
+    }
 
   }

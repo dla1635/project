@@ -17,7 +17,6 @@ const respondOnError = (res, status) => {
     .status(status)
     .json({
     })
-  
 }
   
 module.exports = {  
